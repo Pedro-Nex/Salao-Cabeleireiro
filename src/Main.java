@@ -29,8 +29,9 @@ public class Main {
 
         List<Agendamento> agenda = new ArrayList<>();
 
-        agenda.add(new Agendamento(1, cliente1, corteF, LocalDateTime.of(2026, 11,10,14,0)));
-        agenda.add(new Agendamento(2, cliente2, corteM, LocalDateTime.of(2026, 11,10,15,30)));
+        agenda.add(new Agendamento(1, cliente1, corteF, LocalDateTime.of(2026, 11, 10, 14, 0)));
+        agenda.add(new Agendamento(2, cliente2, corteM, LocalDateTime.of(2026, 11, 10, 15, 30)));
+        agenda.add(new Agendamento(3, cliente3, corteS, LocalDateTime.of(2026, 11, 10, 16, 30)));
 
         System.out.println("\n*** Agenda ***");
         for (Agendamento a : agenda) {
