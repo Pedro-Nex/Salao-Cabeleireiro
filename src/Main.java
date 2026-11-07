@@ -1,41 +1,70 @@
 import model.Cliente;
-import model.Servico;
-import model.Agendamento;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
+    private static final List<Cliente> clientes = new ArrayList<>();
+    private static final Scanner sc = new Scanner(System.in);
+    private static int proximoId = 1;
+
     public static void main(String[] args) {
-        Cliente cliente1 = new Cliente(1, "Mayara Sena", "11999990000", "MayaraSena@gmail.com");
-        Cliente cliente2 = new Cliente(2, "Pedro Neves", "11999990001", "PedroNeves@gmail.com");
-        Cliente cliente3 = new Cliente(3, "Andreas Gigabyte", "11999990002", "AndreasGigabyte@gmail.com");
+        int opcao;
 
-        Servico corteF = new Servico(1, "Corte Feminino", new BigDecimal("80.00"), 60);
-        Servico corteM = new Servico(2, "Corte Masculino", new BigDecimal("30.00"), 45);
-        Servico corteS = new Servico(3, "Corte Super", new BigDecimal("120.00"), 90);
+        do {
+            mostrarMenu();
 
-        System.out.println("*** Clientes ***");
-        System.out.println(cliente1);
-        System.out.println(cliente2);
-        System.out.println(cliente3);
+            try {
+                opcao = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("\n[ERRO] Digite apenas números válidos!");
+                opcao = -1;
+            }
 
-        System.out.println("\n*** Cortes ***");
-        System.out.println(corteF);
-        System.out.println(corteM);
-        System.out.println(corteS);
+            switch (opcao) {
+                case 1 -> cadastrarCliente();
+                case 2 -> listarClientes();
+                case 0 -> System.out.println("Fechando...");
+                default -> {
+                    if (opcao != -1) {
+                        System.out.println("Opção Inválida!");
+                    }
+                }
+            }
+        } while (opcao != 0);
+    }
 
-        List<Agendamento> agenda = new ArrayList<>();
+    private static void mostrarMenu() {
+        System.out.println("\n*** Salão ***");
+        System.out.println("1 - Cadastrar Cliente.");
+        System.out.println("2 - Listar Clientes.");
+        System.out.println("0 - Sair.");
+        System.out.print("Escolha: ");
+    }
 
-        agenda.add(new Agendamento(1, cliente1, corteF, LocalDateTime.of(2026, 11, 10, 14, 0)));
-        agenda.add(new Agendamento(2, cliente2, corteM, LocalDateTime.of(2026, 11, 10, 15, 30)));
-        agenda.add(new Agendamento(3, cliente3, corteS, LocalDateTime.of(2026, 11, 10, 16, 30)));
+    private static void cadastrarCliente() {
+        System.out.print("Nome: ");
+        String nome = sc.nextLine();
+        System.out.print("Telefone: ");
+        String telefone = sc.nextLine();
+        System.out.print("Email: ");
+        String email = sc.nextLine();
 
-        System.out.println("\n*** Agenda ***");
-        for (Agendamento a : agenda) {
-            System.out.println(a);
+        Cliente cliente = new Cliente(proximoId, nome, telefone, email);
+        clientes.add(cliente);
+        proximoId++;
+
+        System.out.println("Cliente Cadastrado: " + cliente);
+    }
+
+    private static void listarClientes() {
+        if (clientes.isEmpty()) {
+            System.out.println("Nenhum cliente cadastrado!");
+            return;
+        }
+        for (Cliente c : clientes) {
+            System.out.println(c);
         }
     }
 }
