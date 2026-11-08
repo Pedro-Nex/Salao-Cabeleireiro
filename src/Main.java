@@ -155,7 +155,7 @@ public class Main {
 
     private static LocalDateTime lerDataHora(String mensagem) {
         while (true) {
-            System.out.println(mensagem);
+            System.out.print(mensagem);
             try {
                 LocalDateTime dataHora = LocalDateTime.parse(sc.nextLine(), FORMATO_ENTRADA);
                 if (dataHora.isAfter(LocalDateTime.now())) {
@@ -170,7 +170,7 @@ public class Main {
 
     private static void agendar() {
         if (clientes.isEmpty() || servicos.isEmpty()) {
-            System.out.println("Cadastre pelo menos um cliente ou um serviço antes de agendar!");
+            System.out.println("Cadastre pelo menos um cliente e um serviço antes de agendar!");
             return;
         }
 
@@ -188,9 +188,16 @@ public class Main {
             return;
         }
 
-        LocalDateTime dataHora = lerDataHora("Data e hora (dd/MM/yyyy HH:mm): ");
+        LocalDateTime dataHoraInicio = lerDataHora("Data e hora (dd/MM/yyyy HH:mm): ");
 
-        Agendamento agendamento = new Agendamento(proximoIdAgendamento, cliente, servico, dataHora);
+        LocalDateTime dataHoraFim = dataHoraInicio.plusMinutes(servico.getDuracaoMinutos());
+
+        if (temConflito(dataHoraInicio, dataHoraFim)) {
+            System.out.println("[ERRO] Já existe um agendamento neste horário ou com sobreposição!");
+            return;
+        }
+
+        Agendamento agendamento = new Agendamento(proximoIdAgendamento, cliente, servico, dataHoraInicio);
         agenda.add(agendamento);
         proximoIdAgendamento++;
 
@@ -205,5 +212,17 @@ public class Main {
         for (Agendamento a : agenda) {
             System.out.println(a);
         }
+    }
+
+    private static boolean temConflito(LocalDateTime inicio, LocalDateTime fim) {
+        for (Agendamento existente : agenda) {
+            LocalDateTime inicioExistente = existente.getDataHora();
+            LocalDateTime fimExistente = existente.getDataHoraFim();
+
+            if (inicio.isBefore(fimExistente) && fim.isAfter(inicioExistente)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
