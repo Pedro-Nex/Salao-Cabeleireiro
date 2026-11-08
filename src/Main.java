@@ -1,8 +1,10 @@
 import model.Cliente;
 import model.Servico;
 import model.Agendamento;
+import service.AgendaService;
+import service.ClienteService;
+import service.ServicoService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.math.BigDecimal;
@@ -12,13 +14,10 @@ import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 
 public class Main {
-    private static final List<Cliente> clientes = new ArrayList<>();
+    private static final ClienteService clienteService = new ClienteService();
+    private static final ServicoService servicoService = new ServicoService();
+    private static final AgendaService agendaService = new AgendaService();
     private static final Scanner sc = new Scanner(System.in);
-    private static int proximoIdCliente = 1;
-    private static final List<Servico> servicos = new ArrayList<>();
-    private static int proximoIdServico = 1;
-    private static final List<Agendamento> agenda = new ArrayList<>();
-    private static int proximoIdAgendamento = 1;
     private static final DateTimeFormatter FORMATO_ENTRADA =
             DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm").withResolverStyle(ResolverStyle.STRICT);
 
@@ -37,10 +36,28 @@ public class Main {
                 case 4 -> listarServicos();
                 case 5 -> agendar();
                 case 6 -> listarAgenda();
+                case 7 -> cancelarAgendamento();
                 case 0 -> System.out.println("Fechando...");
                 default -> System.out.println("Opção Inválida!");
             }
         } while (opcao != 0);
+    }
+
+    private static void cancelarAgendamento() {
+        if (agendaService.listar().isEmpty()) {
+            System.out.println("Nenhum agendamento cadastrado para cancelar!");
+            return;
+        }
+        listarAgenda();
+
+        int id = lerInteiro("Digite o ID do agendamento que deseja cancelar: ", 1);
+
+        try {
+            Agendamento agendamentoCancelado = agendaService.cancelar(id);
+            System.out.println("Agendamento cancelado com sucesso: " + agendamentoCancelado);
+        } catch (IllegalArgumentException e) {
+            System.out.println("[ERRO] " + e.getMessage());
+        }
     }
 
     private static void mostrarMenu() {
@@ -51,6 +68,7 @@ public class Main {
         System.out.println("4 - Listar Serviços.");
         System.out.println("5 - Agendar Horário.");
         System.out.println("6 - Listar Agenda.");
+        System.out.println("7 - Cancelar Agendamento.");
         System.out.println("0 - Sair.");
     }
 
@@ -62,19 +80,21 @@ public class Main {
         System.out.print("Email: ");
         String email = sc.nextLine();
 
-        Cliente cliente = new Cliente(proximoIdCliente, nome, telefone, email);
-        clientes.add(cliente);
-        proximoIdCliente++;
-
-        System.out.println("Cliente Cadastrado: " + cliente);
+        try {
+            Cliente cliente = clienteService.cadastrar(nome, telefone, email);
+            System.out.println("Cliente Cadastrado: " + cliente);
+        } catch (IllegalArgumentException e) {
+            System.out.println("[ERRO] " + e.getMessage());
+        }
     }
 
     private static void listarClientes() {
-        if (clientes.isEmpty()) {
+        List<Cliente> lista = clienteService.listar();
+        if (lista.isEmpty()) {
             System.out.println("Nenhum cliente cadastrado!");
             return;
         }
-        for (Cliente c : clientes) {
+        for (Cliente c : lista) {
             System.out.println(c);
         }
     }
@@ -118,25 +138,23 @@ public class Main {
         BigDecimal preco = lerPreco("Preço (ex: 80.00): ");
         int duracao = lerInteiro("Duração em minutos: ", 1);
 
-        Servico servico = new Servico(proximoIdServico, nome, preco, duracao);
-        servicos.add(servico);
-        proximoIdServico++;
+        Servico servico = servicoService.cadastrar(nome, preco, duracao);
 
         System.out.println("Serviço Cadastrado: " + servico);
     }
 
     private static void listarServicos() {
-        if (servicos.isEmpty()) {
+        if (servicoService.listar().isEmpty()) {
             System.out.println("Nenhum serviço cadastrado!");
             return;
         }
-        for (Servico s : servicos) {
+        for (Servico s : servicoService.listar()) {
             System.out.println(s);
         }
     }
 
     private static Cliente buscarClientePorId(int id) {
-        for (Cliente c : clientes) {
+        for (Cliente c : clienteService.listar()) {
             if (c.getId() == id) {
                 return c;
             }
@@ -145,7 +163,7 @@ public class Main {
     }
 
     private static Servico buscarServicoPorId(int id) {
-        for (Servico s : servicos) {
+        for (Servico s : servicoService.listar()) {
             if (s.getId() == id) {
                 return s;
             }
@@ -169,20 +187,20 @@ public class Main {
     }
 
     private static void agendar() {
-        if (clientes.isEmpty() || servicos.isEmpty()) {
+        if (clienteService.listar().isEmpty() || servicoService.listar().isEmpty()) {
             System.out.println("Cadastre pelo menos um cliente e um serviço antes de agendar!");
             return;
         }
 
         listarClientes();
-        Cliente cliente = buscarClientePorId(lerInteiro("Id do cliente: ", 1));
+        Cliente cliente = clienteService.buscarPorId(lerInteiro("Id do cliente: ", 1));
         if (cliente == null) {
             System.out.println("Cliente não encontrado!");
             return;
         }
 
         listarServicos();
-        Servico servico = buscarServicoPorId(lerInteiro("Id do serviço: ", 1));
+        Servico servico = servicoService.buscarPorId(lerInteiro("Id do serviço: ", 1));
         if (servico == null) {
             System.out.println("Serviço não encontrado!");
             return;
@@ -190,32 +208,26 @@ public class Main {
 
         LocalDateTime dataHoraInicio = lerDataHora("Data e hora (dd/MM/yyyy HH:mm): ");
 
-        LocalDateTime dataHoraFim = dataHoraInicio.plusMinutes(servico.getDuracaoMinutos());
-
-        if (temConflito(dataHoraInicio, dataHoraFim)) {
-            System.out.println("[ERRO] Já existe um agendamento neste horário ou com sobreposição!");
-            return;
+        try {
+            Agendamento agendamento = agendaService.agendar(cliente, servico, dataHoraInicio);
+            System.out.println("Agendado: " + agendamento);
+        } catch (IllegalStateException e) {
+            System.out.println("[ERRO] " + e.getMessage());
         }
-
-        Agendamento agendamento = new Agendamento(proximoIdAgendamento, cliente, servico, dataHoraInicio);
-        agenda.add(agendamento);
-        proximoIdAgendamento++;
-
-        System.out.println("Agendado: " + agendamento);
     }
 
     private static void listarAgenda() {
-        if (agenda.isEmpty()) {
+        if (agendaService.listar().isEmpty()) {
             System.out.println("Nenhum agendamento!");
             return;
         }
-        for (Agendamento a : agenda) {
+        for (Agendamento a : agendaService.listar()) {
             System.out.println(a);
         }
     }
 
     private static boolean temConflito(LocalDateTime inicio, LocalDateTime fim) {
-        for (Agendamento existente : agenda) {
+        for (Agendamento existente : agendaService.listar()) {
             LocalDateTime inicioExistente = existente.getDataHora();
             LocalDateTime fimExistente = existente.getDataHoraFim();
 
