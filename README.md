@@ -1,101 +1,51 @@
-# 💇‍♂️ Salão de Cabeleireiro - Sistema de Gestão e Agendamento
+# Salão de Cabeleireiro
 
-Uma aplicação web desenvolvida para simplificar a gestão e o agendamento de serviços em salões de beleza e barbearias. O sistema permite o controle de agendamentos, clientes, serviços prestados e gestão dos profissionais.
+Aplicação de linha de comando em Java para gerenciar clientes, serviços e agendamentos de um salão.
 
----
+## Funcionalidades
 
-## 📌 Sumário
+- Cadastrar e listar clientes.
+- Cadastrar e listar serviços, com preço e duração.
+- Agendar clientes para serviços em uma data e horário futuros.
+- Impedir agendamentos com horários sobrepostos.
+- Consultar e cancelar agendamentos.
 
-- [Sobre o Projeto](#-sobre-o-projeto)
-- [Funcionalidades](#-funcionalidades)
-- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
-- [Pré-requisitos](#-pré-requisitos)
-- [Como Executar o Projeto](#-como-executar-o-projeto)
-- [Estrutura do Projeto](#-estrutura-do-projeto)
-- [Contribuição](#-contribuição)
-- [Licença](#-licença)
+Os dados ficam armazenados em memória e são perdidos ao encerrar a aplicação.
 
----
+## Requisitos
 
-## 🚀 Sobre o Projeto
+- JDK 17 ou superior.
 
-O **Salão de Cabeleireiro** foi criado para facilitar a organização diária do atendimento em salões. Ele oferece uma interface intuitiva tanto para os administradores/barbeiros acompanharem a agenda quanto para os clientes realizarem seus agendamentos de forma prática e rápida.
+## Como executar
 
----
-
-## ✨ Funcionalidades
-
-- 📅 **Agendamento Online:** Permite a escolha de data, horário, serviço e profissional.
-- 💈 **Gestão de Serviços:** Cadastro e listagem de serviços oferecidos com preços e duração.
-- 👨‍💼 **Gestão de Profissionais:** Organização de horários e atendimento por profissional.
-- 👥 **Controle de Clientes:** Registro e histórico de agendamentos dos clientes.
-- 📱 **Layout Responsivo:** Acessível via desktop e dispositivos móveis.
-
----
-
-## 🛠️ Tecnologias Utilizadas
-
-- **Front-end:** HTML5, CSS3, JavaScript
-- **Back-end / Banco de Dados:** *(Insira aqui a tecnologia utilizada, ex: Node.js, Python/Django, PHP, MySQL, SQLite)*
-- **Ferramentas:** Git e GitHub
-
----
-
-## 📋 Pré-requisitos
-
-Antes de começar, você precisará ter instalado em sua máquina as seguintes ferramentas:
-
-- [Git](https://git-scm.com)
-- *(Adicione aqui a runtime do projeto, como Node.js, Python, PHP, etc.)*
-
----
-
-## 🔧 Como Executar o Projeto
+Clone o repositório e entre na pasta do projeto:
 
 ```bash
-# 1. Clone este repositório
-$ git clone https://github.com/Pedro-Nex/Salao-Cabeleireiro.git
-
-# 2. Acesse a pasta do projeto
-$ cd Salao-Cabeleireiro
-
-# 3. Instale as dependências (se aplicável)
-$ npm install # ou pip install -r requirements.txt
-
-# 4. Inicie a aplicação
-$ npm start # ou python manage.py runserver / php -S localhost:8000
+git clone https://github.com/Pedro-Nex/Salao-Cabeleireiro.git
+cd Salao-Cabeleireiro
 ```
 
-> **Dica:** Caso o repositório utilize apenas arquivos estáticos (HTML/CSS/JS), basta abrir o arquivo `index.html` diretamente no seu navegador.
+No PowerShell, compile e execute:
 
----
+```powershell
+$sources = Get-ChildItem -Recurse src -Filter *.java
+javac -d out $sources.FullName
+java -cp out Main
+```
 
-## 📁 Estrutura do Projeto
+No IntelliJ IDEA, abra o projeto e execute a classe `Main`.
+
+No menu, siga as opções para cadastrar clientes e serviços antes de criar um agendamento. Informe a data e hora no formato `dd/MM/yyyy HH:mm`.
+
+## Estrutura
 
 ```text
-Salao-Cabeleireiro/
-├── assets/          # Imagens, ícones e arquivos estáticos
-├── css/             # Estilos CSS da aplicação
-├── js/              # Scripts e regras de negócio no front-end
-├── index.html       # Página principal
-└── README.md        # Documentação do projeto
+src/
+├── Main.java
+├── model/       # Cliente, serviço e agendamento
+└── service/     # Regras de cadastro e agenda
 ```
 
----
+## Licença
 
-## 🤝 Contribuição
-
-Contribuições são sempre bem-vindas! Se você deseja melhorar este projeto:
-
-1. Faça um **Fork** do repositório.
-2. Crie uma nova branch com as suas alterações (`git checkout -b feature/minha-feature`).
-3. Commit suas alterações (`git commit -m 'Adiciona minha nova feature'`).
-4. Faça o push para a sua branch (`git push origin feature/minha-feature`).
-5. Abra um **Pull Request**.
-
----
-
-
-<p align="center">
-  Desenvolvido por <a href="https://github.com/Pedro-Nex">Pedro-Nex</a> 🚀
-</p>
+Este projeto está disponível sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE).

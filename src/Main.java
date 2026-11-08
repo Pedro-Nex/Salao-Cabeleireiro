@@ -84,7 +84,7 @@ public class Main {
             Cliente cliente = clienteService.cadastrar(nome, telefone, email);
             System.out.println("Cliente Cadastrado: " + cliente);
         } catch (IllegalArgumentException e) {
-            System.out.println("[ERRO] " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
@@ -153,24 +153,6 @@ public class Main {
         }
     }
 
-    private static Cliente buscarClientePorId(int id) {
-        for (Cliente c : clienteService.listar()) {
-            if (c.getId() == id) {
-                return c;
-            }
-        }
-        return null;
-    }
-
-    private static Servico buscarServicoPorId(int id) {
-        for (Servico s : servicoService.listar()) {
-            if (s.getId() == id) {
-                return s;
-            }
-        }
-        return null;
-    }
-
     private static LocalDateTime lerDataHora(String mensagem) {
         while (true) {
             System.out.print(mensagem);
@@ -226,15 +208,4 @@ public class Main {
         }
     }
 
-    private static boolean temConflito(LocalDateTime inicio, LocalDateTime fim) {
-        for (Agendamento existente : agendaService.listar()) {
-            LocalDateTime inicioExistente = existente.getDataHora();
-            LocalDateTime fimExistente = existente.getDataHoraFim();
-
-            if (inicio.isBefore(fimExistente) && fim.isAfter(inicioExistente)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

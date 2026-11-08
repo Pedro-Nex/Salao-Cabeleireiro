@@ -43,7 +43,7 @@ public class AgendaService {
                 .filter(a -> a.getId() == id)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado com o ID: " + id));
-        agenda.removeIf(a -> a.getId() == id);
+        agenda.remove(agendamento);
         return agendamento;
     }
 }

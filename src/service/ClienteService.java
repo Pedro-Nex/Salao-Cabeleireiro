@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClienteService {
-    private static final List<Cliente> clientes = new ArrayList<>();
-    private static int proximoId = 1;
+    private final List<Cliente> clientes = new ArrayList<>();
+    private int proximoId = 1;
 
     public Cliente cadastrar(String nome, String telefone, String email) {
         if (nome == null || nome.isBlank()) {
